@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Glenfield Pool and Leisure Centre Availability</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+        }
+        .facility {
+            margin-bottom: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .status {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>Glenfield Pool and Leisure Centre Availability</h1>
+    <div id="facilities"></div>
+
+    <script>
+        const facilities = [
+            { name: 'Sauna', id: 'sauna' },
+            { name: 'Steam Room', id: 'steam-room' },
+            { name: 'Spa', id: 'spa' }
+        ];
+
+        function createFacilityElement(facility) {
+            const div = document.createElement('div');
+            div.className = 'facility';
+            div.innerHTML = `
+                <h2>${facility.name}</h2>
+                <p>Current Status: <span id="${facility.id}-status" class="status">Unknown</span></p>
+                <form id="${facility.id}-form">
+                    <input type="radio" name="${facility.id}-status" value="open"> Open
+                    <input type="radio" name="${facility.id}-status" value="closed"> Closed
+                    <button type="submit">Update</button>
+                </form>
+            `;
+            return div;
+        }
+
+        function updateStatus(facilityId, status) {
+            const statusElement = document.getElementById(`${facilityId}-status`);
+            statusElement.textContent = status;
+            localStorage.setItem(`${facilityId}-status`, status);
+        }
+
+        function loadStatus(facilityId) {
+            const status = localStorage.getItem(`${facilityId}-status`);
+            if (status) {
+                updateStatus(facilityId, status);
+            }
+        }
+
+        const facilitiesContainer = document.getElementById('facilities');
+
+        facilities.forEach(facility => {
+            const facilityElement = createFacilityElement(facility);
+            facilitiesContainer.appendChild(facilityElement);
+
+            const form = document.getElementById(`${facility.id}-form`);
+            form.addEventListener('submit', (event) => {
+                event.preventDefault();
+                const selectedStatus = form.querySelector(`input[name="${facility.id}-status"]:checked`).value;
+                updateStatus(facility.id, selectedStatus);
+            });
+
+            loadStatus(facility.id);
+        });
+    </script>
+</body>
+</html>
